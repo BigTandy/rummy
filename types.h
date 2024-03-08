@@ -18,6 +18,11 @@ typedef enum courtCards {
     TEN = 'T', JACK = 'J', QUEEN = 'Q', KING = 'K', ACE = 'A'
 } Court;
 
+typedef struct playerState {
+	Card* hand; //The players hand
+	Card* inPlay; //Cards the player has in play
+} pState;
+
 
 
 char suitChar(Suit s);

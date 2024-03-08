@@ -29,16 +29,8 @@ A 2 3 4 5 6 7 8 9 + J Q K
 
 
 
-
-
-
-
 void pCard(Card c);
-
-//void getUserCommand(void);
-void getUserCommand(Card deck[], Card discard[], Card p1[], Card p2[]);
-
-
+void getUserCommand(Card deck[], Card discard[], pState p1, pState p2);
 
 void discardCardAction(void);
 void placeCardAction(void);
@@ -52,6 +44,9 @@ void pickupCardAction(void);
 // const char QUEEN = 'Q';
 // const char KING = 'K';
 // const char ACE = 'A';
+
+
+
 
 
 int main(int argc, char* argv[]) {
@@ -73,15 +68,22 @@ int main(int argc, char* argv[]) {
 
 	//Assume two players
 	//52 & 7 == 3
-	Card Player[52] = {JOKER, 0};
-	Card inPlay_Player[52] = {JOKER, 0};
 
-	Card Computer[52] = {JOKER, 0};
+
+	//Need to keep state together?
+	//^^^ TODO, Keep in mind for I.2
+
+	Card PlayerHand[52] = {JOKER, 0};
+	Card inPlay_Player[52] = {JOKER, 0};
+	pState Player = {PlayerHand, inPlay_Player};
+
+	Card ComputerHand[52] = {JOKER, 0};
 	Card inPlay_Computer[52] = {JOKER, 0};
+	pState Computer = {ComputerHand, inPlay_Computer};
 
 	
 	//Dealing alternates tho...
-	dealHand(deck, Player, Computer);
+	dealHand(deck, Player.hand, Computer.hand);
 
 	/*
 		TODO:
@@ -103,10 +105,14 @@ int main(int argc, char* argv[]) {
 	while(luup) {
 		
 		printf("Your Hand:\n");
-		dumpHand(Player, true);
+		dumpHand(Player.hand, true);
 
 		printf("Discard Pile:\n");
 		dumpHand(discard, true);
+
+		printf("In Play:\n");
+		printf("\tYou:\n");
+		dumpHand(Player.inPlay, true);
 
 		getUserCommand(deck, discard, Player, Computer);
 
@@ -134,12 +140,10 @@ bool areCardsInRow(Card cards[], int size) {
 	for(int i = 0; i < size; i++) {
 
 	}
-
-
 }
 
 
-void getUserCommand(Card deck[], Card discard[], Card p1[], Card p2[]) {
+void getUserCommand(Card deck[], Card discard[], pState p1, pState p2) {
 
 	int LOC;
 	char in;
@@ -187,10 +191,10 @@ void getUserCommand(Card deck[], Card discard[], Card p1[], Card p2[]) {
 		dumpDeck(discard);
 
 		printf("\nP1:\n");
-		dumpDeck(p1);
+		dumpDeck(p1.hand);
 
 		printf("\nP2:\n");
-		dumpDeck(p2);
+		dumpDeck(p2.hand);
 		break;
 	
 	case 'Q':
