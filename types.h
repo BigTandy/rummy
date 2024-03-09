@@ -21,9 +21,39 @@ typedef enum courtCards {
 typedef struct playerState {
 	Card* hand; //The players hand
 	Card* inPlay; //Cards the player has in play
+	//char name[10];
 } pState;
 
+typedef enum whoGoesMutex {
+	PLAYER,
+	COMPUTER
+} whoInPlay;
 
+typedef enum turnState {
+	notStarted,
+	inPlay,
+	discarded
+} tState;
+
+
+/*
+	Hopefully all of the game state,
+	takes in two pState's, 1 for player, 2 for computer
+	Takes two Card*'s, First for deck, second for discard
+*/
+typedef struct gameState {
+	pState Player;
+	pState Computer;
+
+	Card* Deck;
+	Card* Discard;
+
+	whoInPlay Who;
+	tState turnState;
+} gState;
+
+
+pState getCurrentPlayer(gState Game);
 
 char suitChar(Suit s);
 char numChar(int cn);

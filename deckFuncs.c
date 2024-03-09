@@ -1,5 +1,6 @@
 #include "types.h"
 
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -141,28 +142,60 @@ void dumpHand(Card hand[], bool newLine) {
 
 
 
-bool deckPush(Card deck[], int size, Card cd) {
-	//Returns true if it was able to append
-	//
-	//TODO FIX
+bool deckPush(Card deck[], int dSize, Card card) {
+	//Returns how ever many appeneded
 
 	//Hopfully this works lmao
 
-	for(int i = size - 1; i > 0; i--) {
+	for(int i = 0; i < dSize; i++) {
 		if(
-			deck[i].suit != JOKER &&
-			deck[i].number != 0
+			deck[i].suit == JOKER &&
+			deck[i].number == 0
 		) {
-			if(i != size - 1) {
-				deck[i + 1] = cd;
-				return true;
-			} else {
-				//printf("i %d\n", i);
-				return false;
+
+			//printf("i, Found free %d\n", i);
+
+			deck[i] = card;
+			return true;
+		}
+	}
+	
+
+	return false;
+}
+
+
+int deckPushs(Card deck[], int dSize, cardU cards, int cSize) {
+	//Returns how ever many appeneded
+
+	//Hopfully this works lmao
+
+
+	int cDown = cSize;
+	int filled = 0;
+
+	for(int i = 0; i < dSize; i++) {
+		if(
+			deck[i].suit == JOKER &&
+			deck[i].number == 0
+		) {
+
+			//printf("i, Found free %d\n", i);
+			if (cSize == 1) {
+				deck[i] = cards.card;
+			}
+
+			if (cDown > 0) {
+
+				deck[i] = deckPop(cards.cardP, cSize);
+				filled++;
+				cDown--;
 			}
 		}
 	}
-	//printf("???\n");
+	
+
+	return filled;
 }
 
 

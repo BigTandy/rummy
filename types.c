@@ -4,6 +4,18 @@
 
 
 
+pState getCurrentPlayer(gState Game) {
+
+	if (Game.Who == PLAYER) {
+		return Game.Player;
+	} else {
+		return Game.Computer;
+	}
+
+}
+
+
+
 
 
 char numChar(int cn) {
