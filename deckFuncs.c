@@ -118,13 +118,8 @@ void dumpHand(Card hand[], bool newLine) {
 			printf("\n");
 		}
 
-		/*
-			Spent way too much fucking time making this display how I wanted and it looks meh
-			Actually going to self immolate lmao
-			It is 2:18 am rn and I am t i r e d
 
-			Nevermind, it looks goodish now!! yay :)
-		*/
+
 		
 		if (j == i - 1 && (j + 1) % 7 != 0) {
 			printf("\n");

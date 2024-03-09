@@ -13,6 +13,70 @@
 
 
 
+
+
+	// Card testR[3] = {
+	// 	{CLUBS, 1},
+	// 	{CLUBS, 2},
+	// 	{CLUBS, 3}
+	// };
+
+	// printf("%s\n", isRun(testR, 3) ? "In Run" : "Not in Run");
+
+
+	// Card testS[3] = {
+	// 	{CLUBS, 1},
+	// 	{HEARTS, 1},
+	// 	{DIAMONDS, 1}
+	// };
+
+	// printf("%s\n", isSet(testS, 3) ? "In Set" : "Not in Set");
+
+
+	// printf("%s\n", isMeld(testS, 3) ? "In Meld" : "Not in Meld");
+	// printf("%s\n", isMeld(testR, 3) ? "In Meld" : "Not in Meld");
+
+
+
+
+//bool areCardsInRow(Card cards[], int size) {}
+bool isMeld(Card cards[], int size) {
+
+	//TODO
+
+	/*
+		So the rules are in order numebers of the same suit, or 3 - 4 of the same number of diffrenct suit's
+	*/
+
+	//size shouldnt be higher then 4
+
+	return isRun(cards, size) || isSet(cards, size);
+}
+
+
+
+bool isSet(Card cards[], int size) {
+
+	//This can only be four in size (I hope)
+
+	Card priv;
+
+	for (int i = 0; i < size; i++) {
+		if (i == 0) {
+			priv = cards[i];
+			continue;
+		}
+		if (priv.number != cards[i].number) {
+			return false;
+		}
+	}
+
+	return true;
+	
+}
+
+
+
 int comparCard (const void* e1, const void* e2) {
 	//All credit to this stackover question
 	//https://stackoverflow.com/questions/1787996/c-library-function-to-perform-sort

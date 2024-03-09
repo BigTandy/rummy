@@ -17,7 +17,8 @@
 bool isRun(Card cards[], int size);
 int comparCard (const void* e1, const void* e2);
 
-
+bool isSet(Card cards[], int size);
+bool isMeld(Card cards[], int size);
 
 
 

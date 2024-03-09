@@ -49,7 +49,6 @@ void start_turn(gState Game);
 void process_turn(gState Game);
 void end_turn(gState Game);
 
-bool isMeld(Card cards[], int size);
 
 
 // const char TEN = 'T';
@@ -138,13 +137,9 @@ int main(int argc, char* argv[]) {
 	Game.Who = PLAYER;
 	Game.turnState = notStarted;
 
-	// Card test[3] = {
-	// 	{CLUBS, 1},
-	// 	{CLUBS, 2},
-	// 	{CLUBS, 3}
-	// };
 
-	// printf("%s\n", isRun(test, 3) ? "In Run" : "Not in Run");
+
+
 
 
 	/*
@@ -170,10 +165,16 @@ int main(int argc, char* argv[]) {
 			case inPlay:
 				//Ask and process game
 				process_turn(Game);
+				Game.turnState = turnEnded;
+				break;
+			case turnEnded:
+				//End turn and discard
+				end_turn(Game);
+				//Need to switch player and tState
 				break;
 			case discarded:
 				//Cleanup at turn end, and check if end-of-game
-				end_turn(Game);
+				
 				break;
 
 
@@ -193,30 +194,10 @@ int main(int argc, char* argv[]) {
 
 
 
-bool isSet(Card cards[], int size) {
-
-	//This can only be four in size
-
-	
 
 
-	
-}
 
 
-//bool areCardsInRow(Card cards[], int size) {}
-bool isMeld(Card cards[], int size) {
-
-	//TODO
-
-	/*
-		So the rules are in order numebers of the same suit, or 3 - 4 of the same number of diffrenct suit's
-	*/
-
-	//size shouldnt be higher then 4
-
-	return isRun(cards, size) || isSet(cards, size);
-}
 
 
 
@@ -245,10 +226,14 @@ void start_turn(gState Game) {
 	printf("Discard Pile\n");
 	dumpHand(Game.Discard, true);
 
-	printf("Pickup from (D)eck or D(i)scard? ");
+	
 
 	char c;
-	scanf(" %c", &c);
+	do {
+		printf("Pickup from (D)eck or D(i)scard? ");
+		scanf(" %c", &c);
+	} while (c != 'D' && c != 'd' && c != 'I' && c != 'i');
+
 
 	if (c == 'D' || c == 'd') {
 		int worked;
@@ -270,6 +255,30 @@ void start_turn(gState Game) {
 	return;
 }
 
+
+
+void playCards(gState Game) {
+
+	//Left off here,
+	// March 9th 2024 1:02 AM
+	/*
+		Need to get from the user what cards they want to play,
+		if those form a meld (Play cards on other players aswell, todo) (play cards onto their own inPlay aswell, todo)
+		and then actually play the cards into the players `currentPlayer().inPlay` deck
+		return to process_turn (Actually jump back to the top, or restart question loop, so player can play multiple times)
+	
+	
+	*/
+
+
+
+
+
+
+}
+
+
+
 void process_turn(gState Game) {
 
 	//Play cards or end turn (blank char?)
@@ -277,7 +286,23 @@ void process_turn(gState Game) {
 	//printf("\n");
 	
 	char c;
-	scanf(" %c", &c);
+	do {
+		print("(P)lay cards or (S)kip\n");
+		scanf(" %c", &c);
+	} while (c != 'P' && c != 'p' && c != 'S' && c != 's');
+	
+	switch (c) {
+		case 'P':
+		case 'p':
+			//case
+			playCards(Game);
+
+			break;
+		case 'S':
+		case 's':
+			//We want to skip turn, just return
+			return;
+	}
 
 
 	return;

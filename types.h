@@ -32,6 +32,7 @@ typedef enum whoGoesMutex {
 typedef enum turnState {
 	notStarted,
 	inPlay,
+	turnEnded,
 	discarded
 } tState;
 
