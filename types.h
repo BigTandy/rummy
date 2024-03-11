@@ -1,7 +1,6 @@
 #pragma once
 
-
-
+#define DECK_SIZE 52
 
 
 typedef enum suit {

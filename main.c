@@ -257,6 +257,30 @@ void start_turn(gState Game) {
 
 
 
+void getCardNumbers(int numArray[], int size) {
+	//numArray is buffer to return numbers with
+	//Return by refrence
+
+	int b_idx = 0;
+
+	do {
+		printf("Num: ");
+		scanf("%d", &numArray[b_idx]);
+
+		b_idx++;
+		//printf("\n%c\n", temp);
+	} while (numArray[b_idx - 1] >= 0 && b_idx < size);
+
+
+	for (int i = 0; i < DECK_SIZE; i++) {
+		printf("%d\n", numArray[i]);
+	}
+
+	return;
+}
+
+
+
 void playCards(gState Game) {
 
 	//Left off here,
@@ -269,6 +293,18 @@ void playCards(gState Game) {
 	
 	
 	*/
+
+	//Get cards numbers from user
+
+	int buff[DECK_SIZE];  //Prob name this better
+	
+	for(int i = 0; i < DECK_SIZE; i++) {
+		buff[i] = -2;
+	}
+
+	getCardNumbers(buff, DECK_SIZE);
+
+	//Get size of returned card numbers
 
 
 
@@ -287,7 +323,7 @@ void process_turn(gState Game) {
 	
 	char c;
 	do {
-		print("(P)lay cards or (S)kip\n");
+		printf("(P)lay cards or (S)kip\n");
 		scanf(" %c", &c);
 	} while (c != 'P' && c != 'p' && c != 'S' && c != 's');
 	
@@ -301,6 +337,25 @@ void process_turn(gState Game) {
 		case 'S':
 		case 's':
 			//We want to skip turn, just return
+			// printf("Deck:\n");
+			// dumpDeck(Game.Deck);
+
+			// printf("\nDiscard:\n");
+			// dumpDeck(Game.Discard);
+
+			// printf("\nP1:\n");
+			// dumpDeck(Game.Player.hand);
+
+			// printf("\nP1 IP:\n");
+			// dumpDeck(Game.Player.inPlay);
+
+			// printf("\nP2:\n");
+			// dumpDeck(Game.Computer.hand);
+
+			// printf("\nP2 IP:\n");
+			// dumpDeck(Game.Computer.inPlay);
+
+			// printf("\n\n");
 			return;
 	}
 

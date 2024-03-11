@@ -2,6 +2,7 @@
 
 
 
+//const int DECK_SIZE = 52;
 
 
 pState getCurrentPlayer(gState Game) {
