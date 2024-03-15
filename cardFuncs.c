@@ -106,7 +106,7 @@ bool isRun(Card cards[], int size) {
 	//MAKE SURE TO FREE THIS
 	Card* tempSortArray = (Card*) malloc(sizeof(Card) * size);
 	if (tempSortArray == NULL) {
-		perror("Fatal: Failed to allocate room for tempSortArray\n");
+		perror("Fatal: Failed to allocate room for tempSortArray (function isRun in cardFuncs)\n");
 		exit(EXIT_FAILURE);
 	}
 

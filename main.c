@@ -5,7 +5,10 @@
 #include <time.h>
 
 #include <string.h>
-#include <math.h>
+#include <math.h> //https://stackoverflow.com/a/5248968
+
+#include <termios.h>
+#include <ctype.h>
 
 // #include <sys/socket.h>
 // #include <sys/types.h>
@@ -60,10 +63,11 @@ void end_turn(gState Game);
 
 
 
-
+extern __ssize_t getline(char **__restrict __lineptr, size_t *n, FILE *stream);
 
 
 int main(int argc, char* argv[]) {
+
 
 
 	//Seed the random machine
@@ -111,6 +115,7 @@ int main(int argc, char* argv[]) {
 
 	//Todo, add a single card to the discard pile, and display that
 	
+	
 
 	//discard[0] = deckPop(deck, 52); //Switch to deckPush()
 	deckPush(discard, 52, deckPop(deck, 52));
@@ -139,7 +144,10 @@ int main(int argc, char* argv[]) {
 
 
 
-
+	// printf("PH: %d\n", deckSize(PlayerHand));
+	// printf("CH: %d\n", deckSize(ComputerHand));
+	// printf("DS: %d\n", deckSize(deck));
+	// printf("IS: %d\n", deckSize(discard));
 
 
 	/*
@@ -151,6 +159,8 @@ int main(int argc, char* argv[]) {
 	//Player has to begin turn by picking up,
 	//Player then can play if they want,
 	//Player must end turn by discarding, ending the game if that was their last card
+
+	//TODO, need point mapping for cards
 
 	while(luup) {
 
@@ -228,6 +238,8 @@ void start_turn(gState Game) {
 
 	
 
+	//TODO, Print out hand after picking up a card!! <---
+
 	char c;
 	do {
 		printf("Pickup from (D)eck or D(i)scard? ");
@@ -257,25 +269,117 @@ void start_turn(gState Game) {
 
 
 
-void getCardNumbers(int numArray[], int size) {
+void _DEP_getCardNumbers(int numArray[], int size) {
 	//numArray is buffer to return numbers with
 	//Return by refrence
 
+	/*
+	char *buffertest = NULL;
+	size_t bufftestSize;
+	int read = 0;
+	read = getline(&buffertest, &bufftestSize, stdin);
+
+	printf("Bytes: %zu, Return Code: %d\n", bufftestSize, read);
+	printf("%s\n", buffertest);
+	*/
+
 	int b_idx = 0;
 
+
+
+	printf("Num: ");
+
 	do {
-		printf("Num: ");
-		scanf("%d", &numArray[b_idx]);
+		
+		//scanf("%d", &numArray[b_idx]);
+		//fgets(&numArray[b_idx], 1, stdin);
+		
+
+		
+
+		//tcflush(0, TCIFLUSH); //Flush keyboard buffer
 
 		b_idx++;
 		//printf("\n%c\n", temp);
 	} while (numArray[b_idx - 1] >= 0 && b_idx < size);
 
+	return;
+}
 
-	for (int i = 0; i < DECK_SIZE; i++) {
-		printf("%d\n", numArray[i]);
+
+
+void getCardNumbers(int** intArray, int* size) {
+	/*
+		User should free `intArray` after use
+	*/
+
+	char *buffer = NULL; //NEED TO FREE THIS WHEN WE'RE DONE
+	size_t bytesRead = 0;
+	int charsRead;
+
+	printf("Cards to play: ");
+
+	//tcflush(0, TCIFLUSH); //Flush keyboard buffer
+
+	while(getchar() != '\n'); //Actually flush k_buffer
+
+	charsRead = getline(&buffer, &bytesRead, stdin);
+
+	if(charsRead < 0) {
+		//Failed
+		perror("Failed to read in? (getCardNumbers)\n");
 	}
 
+	//Grab ints using sscanf() in loop?
+
+	// printf("Bytes: %zu, Return Code: %d\n", bytesRead, charsRead);
+	// printf("Read: %s\n", buffer);
+
+	#define def_intArr_size 120 //amount of ints not bytes
+
+	*intArray = (int *) malloc(sizeof(int) * def_intArr_size);
+	
+
+	int hold;
+	int idx = 0;
+	int numsRead = 0;
+	int LOC;
+	
+	while(
+		(LOC = sscanf(buffer + idx, "%d", &hold)) > 0 && 
+		(((sizeof(char) * idx) < bytesRead) && (idx < charsRead))) //Just make sure not to overrun the buffer
+	{
+		if(!isdigit(*(buffer + idx))) {
+			//Current char is NOT a number, pass over it
+			idx++;
+			continue;
+		}
+		//printf("%d, %c, %d, L: %d\n", hold, *(buffer + idx), idx, LOC);
+
+		idx += (int) floor(log10(hold)) + 1;
+		numsRead++;
+		//idx++; //Need to account for multidigit numberssssssss
+	}
+
+
+	// *intArray = (int *) malloc(sizeof(int) * numsRead);
+	// *size = numsRead;
+
+	// if(*intArray == NULL) {
+	// 	//We failed...
+	// 	perror("Failed to allocate intArray (getCardNumber)\n");
+	// }
+
+
+	// for(int i = 0; i < numsRead; i++) {
+	// 	(*intArray)[i] = 
+	// }
+
+
+
+
+	DONE:
+	free(buffer);
 	return;
 }
 
@@ -302,15 +406,70 @@ void playCards(gState Game) {
 		buff[i] = -2;
 	}
 
+
+	
+
+	askForCardNumbers:
 	getCardNumbers(buff, DECK_SIZE);
+
+	int currPlayerDeckSize = deckSize(getCurrentPlayer(Game).hand);
 
 	//Get size of returned card numbers
 
+	//Make func?
+	int returned_buff_size = 0;
+
+	while (buff[returned_buff_size] >= 0) {
+		returned_buff_size++;
+	}
+
+	for(int i = 0; i < returned_buff_size; i++) {
+
+		if (buff[i] > currPlayerDeckSize) {
+			printf("Incorrect hand number or amount of cards\n");
+			goto askForCardNumbers;  //TODO, GOTO
+		}
+	}
 
 
 
+	//Need to grab those cards, put them in a new *dynamicly* allocated array (Because the size)
+
+	// for (int i = 0; i < returned_buff_size; i++) {
+	// 	printf("%d, (%c, %c)\n", buff[i],
+	// 	numChar(getCurrentPlayer(Game).hand[buff[i]].number), suitChar(getCurrentPlayer(Game).hand[buff[i]].suit));
+	// }
 
 
+	// BE SURE TO FREE THIS
+	Card* tempCardBuffer = (Card*) malloc(sizeof(Card) * returned_buff_size);
+	if (tempCardBuffer == NULL) {
+		perror("Fatal: Failed to allocate tempCardBuffer\n");
+		exit(EXIT_FAILURE);
+	}
+
+
+	
+
+	//BUG, TODO, Prevent just telling it a higher card number then you have
+	for (int i = 0; i < returned_buff_size; i++) {
+
+		if (buff[i] > currPlayerDeckSize) {
+			//Illegal, cannot access cards not in your hand
+			fprintf(stderr, "Illegal hand access\n");
+			continue; 
+			//We're gonna have an uninitalized space in tempCardBuffer,
+			// Free TCB, and fail playCards?, or call 
+		}
+
+		tempCardBuffer[i] = (Card) {getCurrentPlayer(Game).hand[buff[i]].suit, getCurrentPlayer(Game).hand[buff[i]].number};
+	}
+
+	printf("%s\n", isMeld(tempCardBuffer, returned_buff_size) ? "Is Meld" : "Is Not Meld");
+
+
+	free(tempCardBuffer);
+	return;
 }
 
 

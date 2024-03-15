@@ -5,6 +5,7 @@
         "stdio.h": "c",
         "time.h": "c",
         "deckfuncs.h": "c",
-        "cardfuncs.h": "c"
+        "cardfuncs.h": "c",
+        "math.h": "c"
     }
 }

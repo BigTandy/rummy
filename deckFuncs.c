@@ -11,6 +11,19 @@
 
 
 
+int deckSize(Card deck[]) {
+
+	int i;
+	for(i = 0; i < DECK_SIZE; i++) {
+		if (deck[i].suit == JOKER) {
+			return i;
+		}
+	}
+
+	return i;
+}
+
+
 void genDeck(Card cardArray[]/*, int arrSize*/) {
 	/*
 		Takes a card array and builds standard 52 card dec

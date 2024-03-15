@@ -9,6 +9,8 @@ typedef union cardU {
 } cardU;
 
 
+
+int deckSize(Card deck[]);
 void genDeck(Card[]);
 void shuffle(Card deck[], int size);
 void dumpDeck(Card deck[]);
