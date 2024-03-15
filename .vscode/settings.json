@@ -6,6 +6,8 @@
         "time.h": "c",
         "deckfuncs.h": "c",
         "cardfuncs.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "stdbool.h": "c",
+        "signal.h": "c"
     }
 }

@@ -10,6 +10,8 @@
 #include <termios.h>
 #include <ctype.h>
 
+#include <signal.h>
+
 // #include <sys/socket.h>
 // #include <sys/types.h>
 
@@ -34,7 +36,7 @@ A 2 3 4 5 6 7 8 9 + J Q K
 #include "deckFuncs.h"
 
 #include "cardFuncs.h"
-
+#include "util.h"
 
 
 
@@ -308,80 +310,7 @@ void _DEP_getCardNumbers(int numArray[], int size) {
 
 
 
-void getCardNumbers(int** intArray, int* size) {
-	/*
-		User should free `intArray` after use
-	*/
 
-	char *buffer = NULL; //NEED TO FREE THIS WHEN WE'RE DONE
-	size_t bytesRead = 0;
-	int charsRead;
-
-	printf("Cards to play: ");
-
-	//tcflush(0, TCIFLUSH); //Flush keyboard buffer
-
-	while(getchar() != '\n'); //Actually flush k_buffer
-
-	charsRead = getline(&buffer, &bytesRead, stdin);
-
-	if(charsRead < 0) {
-		//Failed
-		perror("Failed to read in? (getCardNumbers)\n");
-	}
-
-	//Grab ints using sscanf() in loop?
-
-	// printf("Bytes: %zu, Return Code: %d\n", bytesRead, charsRead);
-	// printf("Read: %s\n", buffer);
-
-	#define def_intArr_size 120 //amount of ints not bytes
-
-	*intArray = (int *) malloc(sizeof(int) * def_intArr_size);
-	
-
-	int hold;
-	int idx = 0;
-	int numsRead = 0;
-	int LOC;
-	
-	while(
-		(LOC = sscanf(buffer + idx, "%d", &hold)) > 0 && 
-		(((sizeof(char) * idx) < bytesRead) && (idx < charsRead))) //Just make sure not to overrun the buffer
-	{
-		if(!isdigit(*(buffer + idx))) {
-			//Current char is NOT a number, pass over it
-			idx++;
-			continue;
-		}
-		//printf("%d, %c, %d, L: %d\n", hold, *(buffer + idx), idx, LOC);
-
-		idx += (int) floor(log10(hold)) + 1;
-		numsRead++;
-		//idx++; //Need to account for multidigit numberssssssss
-	}
-
-
-	// *intArray = (int *) malloc(sizeof(int) * numsRead);
-	// *size = numsRead;
-
-	// if(*intArray == NULL) {
-	// 	//We failed...
-	// 	perror("Failed to allocate intArray (getCardNumber)\n");
-	// }
-
-
-	// for(int i = 0; i < numsRead; i++) {
-	// 	(*intArray)[i] = 
-	// }
-
-
-
-
-	DONE:
-	free(buffer);
-	return;
-}
 
 
 
@@ -400,17 +329,22 @@ void playCards(gState Game) {
 
 	//Get cards numbers from user
 
-	int buff[DECK_SIZE];  //Prob name this better
+	//int buff[DECK_SIZE];  //Prob name this better
 	
-	for(int i = 0; i < DECK_SIZE; i++) {
-		buff[i] = -2;
+	// for(int i = 0; i < DECK_SIZE; i++) {
+	// 	buff[i] = -2;
+	// }
+
+	int buff[52];
+	int ibuffSize = 52;
+
+	for(int i = 0; i < ibuffSize; i++) {
+		buff[i] = -1;
 	}
 
 
-	
-
 	askForCardNumbers:
-	getCardNumbers(buff, DECK_SIZE);
+	getCardNumbers(buff, ibuffSize);
 
 	int currPlayerDeckSize = deckSize(getCurrentPlayer(Game).hand);
 
@@ -423,8 +357,18 @@ void playCards(gState Game) {
 		returned_buff_size++;
 	}
 
-	for(int i = 0; i < returned_buff_size; i++) {
 
+	//We must find out if the user wants to play cards on themselves or other
+	//How do we play cards on existing run
+	//Deck metadata? Run Numbers?
+	if (returned_buff_size < 3) {
+		//Not enough cards to play for a normal hand
+
+	}
+
+
+
+	for(int i = 0; i < returned_buff_size; i++) {
 		if (buff[i] > currPlayerDeckSize) {
 			printf("Incorrect hand number or amount of cards\n");
 			goto askForCardNumbers;  //TODO, GOTO
@@ -466,6 +410,10 @@ void playCards(gState Game) {
 	}
 
 	printf("%s\n", isMeld(tempCardBuffer, returned_buff_size) ? "Is Meld" : "Is Not Meld");
+
+	if (isMeld(tempCardBuffer, returned_buff_size)) {
+
+	}
 
 
 	free(tempCardBuffer);
