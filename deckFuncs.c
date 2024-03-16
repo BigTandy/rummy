@@ -150,6 +150,47 @@ void dumpHand(Card hand[], bool newLine) {
 
 
 
+
+void deckRemoveMiddle(Card deck[], int dSize, int index) {
+
+	if (index >= dSize) {
+		return;
+	}
+
+	deck[index] = (Card) {JOKER, 0};
+
+	//int idx = index;
+
+
+	//Card currCard = deck[index + 1];
+
+	//Hopefully this works
+	//All my energy has been spent before I started on this
+	int i;
+	for (i = index + 1; i < dSize; i++) {
+
+		if (deck[i].number != 0 || deck[i].suit != JOKER) {
+			deck[i - 1] = deck[i];
+			#ifdef DEBUG
+			printf("Moved Card (%c%c) down 1 from %d\n", numChar(deck[i].number), suitChar(deck[i].suit), i);
+			#endif
+		} else {
+			deck[i - 1] = (Card) {JOKER, 0};
+			#ifdef DEBUG
+			printf("Made %d Blank Card\n", i);
+			#endif
+			return;
+		}
+
+	}
+	#ifdef DEBUG
+	printf("Exited, i:%d, index:%d, dSize:%d\n", i, index, dSize);
+	#endif
+
+}
+
+
+
 int deckPush(Card deck[], int dSize, Card card) {
 	//Returns index of append, -1 if fail
 
@@ -173,38 +214,7 @@ int deckPush(Card deck[], int dSize, Card card) {
 }
 
 
-// int deckPushs(Card deck[], int dSize, cardU cards, int cSize) {
-// 	//Returns how ever many appeneded
 
-// 	//Hopfully this works lmao
-
-
-// 	int cDown = cSize;
-// 	int filled = 0;
-
-// 	for(int i = 0; i < dSize; i++) {
-// 		if(
-// 			deck[i].suit == JOKER &&
-// 			deck[i].number == 0
-// 		) {
-
-// 			//printf("i, Found free %d\n", i);
-// 			if (cSize == 1) {
-// 				deck[i] = cards.card;
-// 			}
-
-// 			if (cDown > 0) {
-
-// 				deck[i] = deckPop(cards.cardP, cSize);
-// 				filled++;
-// 				cDown--;
-// 			}
-// 		}
-// 	}
-	
-
-// 	return filled;
-// }
 
 
 Card deckPop(Card deck[], int size) {
@@ -255,3 +265,35 @@ void dumpDeck(Card deck[]) {
 
 
 
+// int deckPushs(Card deck[], int dSize, cardU cards, int cSize) {
+// 	//Returns how ever many appeneded
+
+// 	//Hopfully this works lmao
+
+
+// 	int cDown = cSize;
+// 	int filled = 0;
+
+// 	for(int i = 0; i < dSize; i++) {
+// 		if(
+// 			deck[i].suit == JOKER &&
+// 			deck[i].number == 0
+// 		) {
+
+// 			//printf("i, Found free %d\n", i);
+// 			if (cSize == 1) {
+// 				deck[i] = cards.card;
+// 			}
+
+// 			if (cDown > 0) {
+
+// 				deck[i] = deckPop(cards.cardP, cSize);
+// 				filled++;
+// 				cDown--;
+// 			}
+// 		}
+// 	}
+	
+
+// 	return filled;
+// }

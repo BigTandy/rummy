@@ -2,6 +2,8 @@
 
 #define DECK_SIZE 52
 
+//#define DEBUG
+
 
 typedef enum suit {
 	JOKER = 0, CLUBS, HEARTS, SPADES, DIAMONDS

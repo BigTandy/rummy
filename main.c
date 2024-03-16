@@ -269,6 +269,8 @@ void start_turn(gState* Game) {
 
 
 	} else if (c == 'I' || c == 'i') {
+
+		//TODO REPLACE WITH GETCARDNUMBER
 		printf("Number ");
 		int discardPickup;
 		scanf("%d", &discardPickup);
@@ -284,7 +286,17 @@ void start_turn(gState* Game) {
 }
 
 
+int comparInt (const void* e1, const void* e2) {
 
+	int a = *((int*)e1);
+	int b = *((int*)e2);
+
+	if (a > b)
+		return -1;
+	if (a < b)
+		return 1;
+	return 0;
+}
 
 
 void playCards(gState* Game) {
@@ -324,7 +336,7 @@ void playCards(gState* Game) {
 
 	getCardNumbers(buff, ibuffSize);
 
-	
+
 
 	//Get size of returned card numbers
 
@@ -334,6 +346,17 @@ void playCards(gState* Game) {
 	while (buff[returned_buff_size] >= 0) {
 		returned_buff_size++;
 	}
+
+	//We need to sort and reverse `buff` so when we remove cards from the hand, we dont modify the data we are working on
+	//Bandaid solution ik, but ill fix later, 11:30 PM rn so I just want it to work
+
+
+	#ifdef DEBUG
+	for (int i = 0; i < DECK_SIZE; i++) {
+		printf("%d ", buff[i]);
+	}
+	printf("\n");
+	#endif
 
 
 	//We must find out if the user wants to play cards on themselves or other
@@ -415,10 +438,44 @@ void playCards(gState* Game) {
 			(CardIndex) {tempCardBuffer[i], indexofApp};
 
 			getCurrentPlayer(Game)->ipRuns[getCurrentPlayer(Game)->amountRuns].size++;
+
+			//When in order e.g. (0 .. 2), causes the last item to be repeated into `inPlay` instead of being removed from
+			// `hand`
+			
+
 		}
 		getCurrentPlayer(Game)->amountRuns++;
-		
 
+		//FREE THIS
+		int *tempiBuff = (int*) malloc(sizeof(int) * returned_buff_size);
+		if (tempiBuff == NULL) {
+			//Failed to allocate
+			perror("Failed to allocate tempiBuff\n");
+			#ifndef DEBUG
+			exit(EXIT_FAILURE);
+			#endif
+		}
+
+		memcpy(tempiBuff, buff, sizeof(int) * returned_buff_size);
+		qsort(tempiBuff, returned_buff_size, sizeof(int), comparInt);
+
+		#ifdef DEBUG
+		printf("tempibuf:\n");
+		for (int i = 0; i < returned_buff_size; i++) {
+			printf("\t%d\n", tempiBuff[i]);
+		}
+		#endif
+
+		
+		for (int i = returned_buff_size - 1; i >= 0; i--) {
+			//Each time we remove one, we need to (do something with the diffrence between buff[i] - buff[i - 1])
+			#ifdef DEBUG
+			printf("Removing %d, i%d ", buff[i], i);
+			#endif
+			deckRemoveMiddle(getCurrentPlayer(Game)->hand, DECK_SIZE, buff[i]);
+		}
+
+		free(tempiBuff);
 
 
 	} else {
