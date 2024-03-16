@@ -128,6 +128,16 @@ bool isRun(Card cards[], int size) {
 		}
 		if ( tempSortArray[i].number - priv != 1  || tempSortArray[i].suit != privS) {
 			//The card is NOT exactly 1 higher then the last
+
+			//Need to make sure aces can be high or low
+			if(
+				(priv == 1 && tempSortArray[size - 1].number == 13) && \
+				(privS == tempSortArray[size - 1].suit)
+			) {
+				//TODO, better way to do this, and better way to impliment cards
+				continue;
+			}
+
 			free(tempSortArray); //Make sure to free that
 			return false;
 		}

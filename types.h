@@ -13,6 +13,18 @@ typedef struct card {
 	int number; //A = 1 & 14, 10 = T, 11 = J, 12 = Q, 13 = K
 } Card;
 
+typedef struct cardIndex {
+	Card card;
+	int index;
+} CardIndex;
+
+//Each card in a deck is unique
+typedef struct run {
+	//Card runCards[DECK_SIZE];
+	CardIndex runCards[DECK_SIZE];
+	int size;
+} Run;
+
 typedef enum courtCards {
     TEN = 'T', JACK = 'J', QUEEN = 'Q', KING = 'K', ACE = 'A'
 } Court;
@@ -20,6 +32,8 @@ typedef enum courtCards {
 typedef struct playerState {
 	Card* hand; //The players hand
 	Card* inPlay; //Cards the player has in play
+	int amountRuns;
+	Run ipRuns[DECK_SIZE]; //Can prob optimize this later
 	//char name[10];
 } pState;
 
@@ -53,7 +67,7 @@ typedef struct gameState {
 } gState;
 
 
-pState getCurrentPlayer(gState Game);
+pState* getCurrentPlayer(gState* Game);
 
 char suitChar(Suit s);
 char numChar(int cn);

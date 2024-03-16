@@ -5,12 +5,12 @@
 //const int DECK_SIZE = 52;
 
 
-pState getCurrentPlayer(gState Game) {
+pState* getCurrentPlayer(gState* Game) {
 
-	if (Game.Who == PLAYER) {
-		return Game.Player;
+	if (Game->Who == PLAYER) {
+		return &Game->Player;
 	} else {
-		return Game.Computer;
+		return &Game->Computer;
 	}
 
 }

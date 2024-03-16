@@ -11,7 +11,6 @@
 
 
 
-
 void getCardNumbers(int intArray[], int size) {
 	
 	char *buffer = NULL; //NEED TO FREE THIS WHEN WE'RE DONE
@@ -20,9 +19,14 @@ void getCardNumbers(int intArray[], int size) {
 
 	printf("Cards to play: ");
 
-	//tcflush(0, TCIFLUSH); //Flush keyboard buffer
 
-	while(getchar() != '\n'); //Actually flush k_buffer
+	//Actually flush keyboard buffer
+	char t;
+	//while((t = getchar()) != '\n' && t != EOF);
+	while((t = getchar()) != '\n' && t != EOF);
+
+	printf("BREAK\n");
+
 
 	charsRead = getline(&buffer, &bytesRead, stdin);
 

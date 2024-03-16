@@ -150,8 +150,8 @@ void dumpHand(Card hand[], bool newLine) {
 
 
 
-bool deckPush(Card deck[], int dSize, Card card) {
-	//Returns how ever many appeneded
+int deckPush(Card deck[], int dSize, Card card) {
+	//Returns index of append, -1 if fail
 
 	//Hopfully this works lmao
 
@@ -164,12 +164,12 @@ bool deckPush(Card deck[], int dSize, Card card) {
 			//printf("i, Found free %d\n", i);
 
 			deck[i] = card;
-			return true;
+			return i;
 		}
 	}
 	
 
-	return false;
+	return -1;
 }
 
 

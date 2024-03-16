@@ -15,7 +15,7 @@ void genDeck(Card[]);
 void shuffle(Card deck[], int size);
 void dumpDeck(Card deck[]);
 
-bool deckPush(Card deck[], int dSize, Card card);
+int deckPush(Card deck[], int dSize, Card card);
 int deckPushs(Card deck[], int dSize, cardU cards, int cSize);
 
 void dealHand(Card deck[], Card hand1[], Card hand2[]);

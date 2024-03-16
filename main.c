@@ -42,17 +42,10 @@ A 2 3 4 5 6 7 8 9 + J Q K
 
 
 void pCard(Card c);
-void getUserCommand(gState Game);
+void start_turn(gState* Game);
 
-void discardCardAction(gState Game);
-void placeCardAction(gState Game);
-
-void pickupCardAction(gState Game);
-void printUsage(void);
-
-void start_turn(gState Game);
-void process_turn(gState Game);
-void end_turn(gState Game);
+void process_turn(gState* Game);
+void end_turn(gState* Game);
 
 
 
@@ -94,11 +87,29 @@ int main(int argc, char* argv[]) {
 
 	Card PlayerHand[52] = {JOKER, 0};
 	Card inPlay_Player[52] = {JOKER, 0};
-	pState Player = {PlayerHand, inPlay_Player};
+
+	pState Player;// = {PlayerHand, inPlay_Player};
+	Player.hand = PlayerHand;
+	Player.inPlay = inPlay_Player;
+	Player.amountRuns = 0;
+	
+	for(int i = 0; i < DECK_SIZE; i++) {
+		Player.ipRuns[i] = (Run) {{JOKER, 0}};
+	}
+
 
 	Card ComputerHand[52] = {JOKER, 0};
 	Card inPlay_Computer[52] = {JOKER, 0};
-	pState Computer = {ComputerHand, inPlay_Computer};
+
+	pState Computer;// = {ComputerHand, inPlay_Computer};
+	Computer.hand = ComputerHand;
+	Computer.inPlay = inPlay_Computer;
+	Computer.amountRuns = 0;
+
+	for(int i = 0; i < DECK_SIZE; i++) {
+		Computer.ipRuns[i] = (Run) {{JOKER, 0}};
+	}
+
 
 	
 	//Dealing alternates tho...
@@ -171,17 +182,18 @@ int main(int argc, char* argv[]) {
 
 			case notStarted:
 				//Ask player to pickup
-				start_turn(Game);
+				start_turn(&Game);
 				Game.turnState = inPlay;
 				break;
 			case inPlay:
 				//Ask and process game
-				process_turn(Game);
-				Game.turnState = turnEnded;
+				process_turn(&Game);
+				//Game.turnState = turnEnded;
+				Game.turnState = notStarted;
 				break;
 			case turnEnded:
 				//End turn and discard
-				end_turn(Game);
+				end_turn(&Game);
 				//Need to switch player and tState
 				break;
 			case discarded:
@@ -214,7 +226,7 @@ int main(int argc, char* argv[]) {
 
 
 
-void start_turn(gState Game) {
+void start_turn(gState* Game) {
 
 	//Tell user the table state and their hand
 	//Tell them to pickup (-1 for deck, # for discard)(?)
@@ -223,20 +235,33 @@ void start_turn(gState Game) {
 	//Need function to return correct array for current player & Func to return right string for c-player
 
 	//REPLACE SOMETIME
-	if(Game.Who == PLAYER)
+	if(Game->Who == PLAYER)
 		printf("Player 1\n");
 	else
 		printf("Player 2\n");
 	
 	
 	printf("Your hand:\n");
-	dumpHand(getCurrentPlayer(Game).hand, true);
+	dumpHand(getCurrentPlayer(Game)->hand, true);
 
 	printf("Your Cards In Play\n");
-	dumpHand(getCurrentPlayer(Game).inPlay, true);
+	dumpHand(getCurrentPlayer(Game)->inPlay, true);
 
 	printf("Discard Pile\n");
-	dumpHand(Game.Discard, true);
+	dumpHand(Game->Discard, true);
+
+
+	printf("Runs: %d\n", getCurrentPlayer(Game)->amountRuns);
+	for (int i = 0; i < getCurrentPlayer(Game)->amountRuns; i++) {
+
+		printf("Run #%d: %d\n", i, getCurrentPlayer(Game)->ipRuns[i].size);
+
+		for (int j = 0; j < getCurrentPlayer(Game)->ipRuns[i].size; j++) {
+			pCard(getCurrentPlayer(Game)->ipRuns[i].runCards[j].card);
+			printf("I: %d\n", getCurrentPlayer(Game)->ipRuns[i].runCards[j].index);
+		}
+		printf("---\n");
+	}
 
 	
 
@@ -250,10 +275,9 @@ void start_turn(gState Game) {
 
 
 	if (c == 'D' || c == 'd') {
-		int worked;
 
-		worked = deckPush(getCurrentPlayer(Game).hand, 52, deckPop(Game.Deck, 52));
-		//printf("Filled, %d\n", worked);
+		deckPush(getCurrentPlayer(Game)->hand, 52, deckPop(Game->Deck, 52));
+
 
 	} else if (c == 'I' || c == 'i') {
 		printf("Number ");
@@ -271,50 +295,9 @@ void start_turn(gState Game) {
 
 
 
-void _DEP_getCardNumbers(int numArray[], int size) {
-	//numArray is buffer to return numbers with
-	//Return by refrence
-
-	/*
-	char *buffertest = NULL;
-	size_t bufftestSize;
-	int read = 0;
-	read = getline(&buffertest, &bufftestSize, stdin);
-
-	printf("Bytes: %zu, Return Code: %d\n", bufftestSize, read);
-	printf("%s\n", buffertest);
-	*/
-
-	int b_idx = 0;
 
 
-
-	printf("Num: ");
-
-	do {
-		
-		//scanf("%d", &numArray[b_idx]);
-		//fgets(&numArray[b_idx], 1, stdin);
-		
-
-		
-
-		//tcflush(0, TCIFLUSH); //Flush keyboard buffer
-
-		b_idx++;
-		//printf("\n%c\n", temp);
-	} while (numArray[b_idx - 1] >= 0 && b_idx < size);
-
-	return;
-}
-
-
-
-
-
-
-
-void playCards(gState Game) {
+void playCards(gState* Game) {
 
 	//Left off here,
 	// March 9th 2024 1:02 AM
@@ -329,24 +312,29 @@ void playCards(gState Game) {
 
 	//Get cards numbers from user
 
-	//int buff[DECK_SIZE];  //Prob name this better
-	
-	// for(int i = 0; i < DECK_SIZE; i++) {
-	// 	buff[i] = -2;
-	// }
+
+	//Make sure the user knows their most current hand
+	printf("\n----------\nYour hand:\n");
+	dumpHand(getCurrentPlayer(Game)->hand, true);
+
 
 	int buff[52];
 	int ibuffSize = 52;
 
+
+	int currPlayerDeckSize = deckSize(getCurrentPlayer(Game)->hand);
+
+
+	askForCardNumbers:
+
+	//Need to wipe buffer
 	for(int i = 0; i < ibuffSize; i++) {
 		buff[i] = -1;
 	}
 
-
-	askForCardNumbers:
 	getCardNumbers(buff, ibuffSize);
 
-	int currPlayerDeckSize = deckSize(getCurrentPlayer(Game).hand);
+	
 
 	//Get size of returned card numbers
 
@@ -361,6 +349,8 @@ void playCards(gState Game) {
 	//We must find out if the user wants to play cards on themselves or other
 	//How do we play cards on existing run
 	//Deck metadata? Run Numbers?
+
+	//TODO
 	if (returned_buff_size < 3) {
 		//Not enough cards to play for a normal hand
 
@@ -406,15 +396,48 @@ void playCards(gState Game) {
 			// Free TCB, and fail playCards?, or call 
 		}
 
-		tempCardBuffer[i] = (Card) {getCurrentPlayer(Game).hand[buff[i]].suit, getCurrentPlayer(Game).hand[buff[i]].number};
+		tempCardBuffer[i] = (Card) {getCurrentPlayer(Game)->hand[buff[i]].suit, getCurrentPlayer(Game)->hand[buff[i]].number};
 	}
+
+
 
 	printf("%s\n", isMeld(tempCardBuffer, returned_buff_size) ? "Is Meld" : "Is Not Meld");
 
-	if (isMeld(tempCardBuffer, returned_buff_size)) {
+	// printf("RBS: %d\n", returned_buff_size);
+	// for (int i = 0; i < returned_buff_size; i++) {
+	// 	pCard(tempCardBuffer[i]);
+	// }
 
+
+	if (isMeld(tempCardBuffer, returned_buff_size)) {
+		//We play the cards
+		//TODO, sainity Logic
+		//TODO, remove cards from deck
+		//TODO, need deck function to remove card from middle of deck, and defrag the deck
+
+		int indexofApp;
+		for (int i = 0; i < returned_buff_size; i++) {
+			
+			indexofApp = deckPush(getCurrentPlayer(Game)->inPlay, DECK_SIZE, tempCardBuffer[i]);
+
+			//Add Cards To Run
+			getCurrentPlayer(Game)->ipRuns[getCurrentPlayer(Game)->amountRuns].runCards[i] = \
+			(CardIndex) {tempCardBuffer[i], indexofApp};
+
+			getCurrentPlayer(Game)->ipRuns[getCurrentPlayer(Game)->amountRuns].size++;
+		}
+		getCurrentPlayer(Game)->amountRuns++;
+		
+
+
+
+	} else {
+		//Player tried to play cards that are not a meld, return them to getCardNumbers
+		printf("The cards selected are not a meld\n");
+		goto askForCardNumbers;
 	}
 
+	printf("\n\n");
 
 	free(tempCardBuffer);
 	return;
@@ -422,7 +445,7 @@ void playCards(gState Game) {
 
 
 
-void process_turn(gState Game) {
+void process_turn(gState* Game) {
 
 	//Play cards or end turn (blank char?)
 
@@ -471,7 +494,7 @@ void process_turn(gState Game) {
 }
 
 
-void end_turn(gState Game) {
+void end_turn(gState* Game) {
 
 
 
