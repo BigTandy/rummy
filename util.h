@@ -18,6 +18,6 @@
 
 
 
-
+void flushKeyboard(void);
 void getCardNumbers(int intArray[], int size);
 

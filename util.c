@@ -9,10 +9,17 @@
 #include "util.h"
 
 
+void flushKeyboard(void) {
+	char t;
+	while((t = getchar()) != '\n' && t != EOF);
+}
 
 
 void getCardNumbers(int intArray[], int size) {
 	
+	//Thank you to Dr. Adams who helped me get this to work
+
+
 	char *buffer = NULL; //NEED TO FREE THIS WHEN WE'RE DONE
 	size_t bytesRead = 0;
 	int charsRead;
@@ -20,15 +27,11 @@ void getCardNumbers(int intArray[], int size) {
 	printf("Cards to play: ");
 
 
-	//Actually flush keyboard buffer
-	char t;
-	//while((t = getchar()) != '\n' && t != EOF);
-	while((t = getchar()) != '\n' && t != EOF);
-
-	printf("BREAK\n");
-
-
 	charsRead = getline(&buffer, &bytesRead, stdin);
+
+	//flush keyboard buffer
+	//flushKeyboard();
+
 
 	if(charsRead < 0) {
 		//Failed

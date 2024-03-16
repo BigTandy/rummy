@@ -72,7 +72,6 @@ int main(int argc, char* argv[]) {
 	Card discard[52] = {JOKER, 0};
 	genDeck(deck);
 
-	//Can you shuggle the cahds
 	shuffle(deck, 52);
 
 	//Need to gen players
@@ -119,18 +118,7 @@ int main(int argc, char* argv[]) {
 	gState Game = {Player, Computer, deck, discard};
 
 
-	/*
-		TODO:
-		Clean up and organize code
-		Organize it into a "card game" engine
-	*/
 
-
-	//Todo, add a single card to the discard pile, and display that
-	
-	
-
-	//discard[0] = deckPop(deck, 52); //Switch to deckPush()
 	deckPush(discard, 52, deckPop(deck, 52));
 
 	
@@ -271,6 +259,7 @@ void start_turn(gState* Game) {
 	do {
 		printf("Pickup from (D)eck or D(i)scard? ");
 		scanf(" %c", &c);
+		flushKeyboard();
 	} while (c != 'D' && c != 'd' && c != 'I' && c != 'i');
 
 
@@ -283,6 +272,7 @@ void start_turn(gState* Game) {
 		printf("Number ");
 		int discardPickup;
 		scanf("%d", &discardPickup);
+		flushKeyboard();
 		//Do logic for picking up cards from discard
 		//Force player to use the lowest picked up card if not (c == 0), if they dont, return cards
 		//TODO ^^^
@@ -455,6 +445,7 @@ void process_turn(gState* Game) {
 	do {
 		printf("(P)lay cards or (S)kip\n");
 		scanf(" %c", &c);
+		flushKeyboard();
 	} while (c != 'P' && c != 'p' && c != 'S' && c != 's');
 	
 	switch (c) {

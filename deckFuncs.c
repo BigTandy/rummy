@@ -173,38 +173,38 @@ int deckPush(Card deck[], int dSize, Card card) {
 }
 
 
-int deckPushs(Card deck[], int dSize, cardU cards, int cSize) {
-	//Returns how ever many appeneded
+// int deckPushs(Card deck[], int dSize, cardU cards, int cSize) {
+// 	//Returns how ever many appeneded
 
-	//Hopfully this works lmao
+// 	//Hopfully this works lmao
 
 
-	int cDown = cSize;
-	int filled = 0;
+// 	int cDown = cSize;
+// 	int filled = 0;
 
-	for(int i = 0; i < dSize; i++) {
-		if(
-			deck[i].suit == JOKER &&
-			deck[i].number == 0
-		) {
+// 	for(int i = 0; i < dSize; i++) {
+// 		if(
+// 			deck[i].suit == JOKER &&
+// 			deck[i].number == 0
+// 		) {
 
-			//printf("i, Found free %d\n", i);
-			if (cSize == 1) {
-				deck[i] = cards.card;
-			}
+// 			//printf("i, Found free %d\n", i);
+// 			if (cSize == 1) {
+// 				deck[i] = cards.card;
+// 			}
 
-			if (cDown > 0) {
+// 			if (cDown > 0) {
 
-				deck[i] = deckPop(cards.cardP, cSize);
-				filled++;
-				cDown--;
-			}
-		}
-	}
+// 				deck[i] = deckPop(cards.cardP, cSize);
+// 				filled++;
+// 				cDown--;
+// 			}
+// 		}
+// 	}
 	
 
-	return filled;
-}
+// 	return filled;
+// }
 
 
 Card deckPop(Card deck[], int size) {
