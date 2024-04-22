@@ -39,7 +39,7 @@ typedef struct playerState {
 	//char name[10];
 } pState;
 
-typedef enum whoGoesMutex {
+typedef enum whoGoesState {
 	PLAYER,
 	COMPUTER
 } whoInPlay;

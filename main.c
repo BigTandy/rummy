@@ -64,15 +64,17 @@ extern __ssize_t getline(char **__restrict __lineptr, size_t *n, FILE *stream);
 int main(int argc, char* argv[]) {
 
 
+	//gcc main.c deckFuncs.c types.c cardFuncs.c util.c -lm -g
+
 
 	//Seed the random machine
 	srand((unsigned) time(NULL));
 
-	Card deck[52];
-	Card discard[52] = {JOKER, 0};
+	Card deck[DECK_SIZE];
+	Card discard[DECK_SIZE] = {JOKER, 0};
 	genDeck(deck);
 
-	shuffle(deck, 52);
+	shuffle(deck, DECK_SIZE);
 
 	//Need to gen players
 	//Shufle dec?
@@ -84,8 +86,8 @@ int main(int argc, char* argv[]) {
 	//Need to keep state together?
 	//^^^ TODO, Keep in mind for I.2
 
-	Card PlayerHand[52] = {JOKER, 0};
-	Card inPlay_Player[52] = {JOKER, 0};
+	Card PlayerHand[DECK_SIZE] = {JOKER, 0};
+	Card inPlay_Player[DECK_SIZE] = {JOKER, 0};
 
 	pState Player;// = {PlayerHand, inPlay_Player};
 	Player.hand = PlayerHand;
@@ -119,7 +121,7 @@ int main(int argc, char* argv[]) {
 
 
 
-	deckPush(discard, 52, deckPop(deck, 52));
+	deckPush(discard, DECK_SIZE, deckPop(deck, DECK_SIZE));
 
 	
 	
@@ -176,19 +178,26 @@ int main(int argc, char* argv[]) {
 			case inPlay:
 				//Ask and process game
 				process_turn(&Game);
-				//Game.turnState = turnEnded;
-				Game.turnState = notStarted;
+				Game.turnState = turnEnded;
+				//Game.turnState = notStarted;
 				break;
 			case turnEnded:
 				//End turn and discard
 				end_turn(&Game);
 				//Need to switch player and tState
-				break;
-			case discarded:
-				//Cleanup at turn end, and check if end-of-game
-				
-				break;
 
+				if (Game.Who == PLAYER) {
+					Game.Who = COMPUTER;
+				}
+				
+				if (Game.Who == COMPUTER) {
+					Game.Who = PLAYER;
+				}
+
+
+
+				Game.turnState = notStarted;
+				break;
 
 		}
 
@@ -202,7 +211,7 @@ int main(int argc, char* argv[]) {
 
 
 
-	
+
 
 
 
@@ -232,24 +241,29 @@ void start_turn(gState* Game) {
 	printf("Your hand:\n");
 	dumpHand(getCurrentPlayer(Game)->hand, true);
 
-	printf("Your Cards In Play\n");
-	dumpHand(getCurrentPlayer(Game)->inPlay, true);
+	//Make this show runs for cards in play
+	printf("Your Cards In Play:\n");
+	//dumpHand(getCurrentPlayer(Game)->inPlay, true);
+	dumpInPlay(*getCurrentPlayer(Game));
 
-	printf("Discard Pile\n");
+	printf("Discard Pile:\n");
 	dumpHand(Game->Discard, true);
 
 
-	printf("Runs: %d\n", getCurrentPlayer(Game)->amountRuns);
-	for (int i = 0; i < getCurrentPlayer(Game)->amountRuns; i++) {
 
-		printf("Run #%d: %d\n", i, getCurrentPlayer(Game)->ipRuns[i].size);
+	// //TODO, make this way better lmao;
+	// //Remove this
+	// printf("Runs: %d\n", getCurrentPlayer(Game)->amountRuns);
+	// for (int i = 0; i < getCurrentPlayer(Game)->amountRuns; i++) {
 
-		for (int j = 0; j < getCurrentPlayer(Game)->ipRuns[i].size; j++) {
-			pCard(getCurrentPlayer(Game)->ipRuns[i].runCards[j].card);
-			printf("I: %d\n", getCurrentPlayer(Game)->ipRuns[i].runCards[j].index);
-		}
-		printf("---\n");
-	}
+	// 	printf("Run #%d: %d\n", i, getCurrentPlayer(Game)->ipRuns[i].size);
+
+	// 	for (int j = 0; j < getCurrentPlayer(Game)->ipRuns[i].size; j++) {
+	// 		pCard(getCurrentPlayer(Game)->ipRuns[i].runCards[j].card);
+	// 		printf("I: %d\n", getCurrentPlayer(Game)->ipRuns[i].runCards[j].index);
+	// 	}
+	// 	printf("---\n");
+	// }
 
 	
 
@@ -315,13 +329,13 @@ void playCards(gState* Game) {
 	//Get cards numbers from user
 
 
-	//Make sure the user knows their most current hand
-	printf("\n----------\nYour hand:\n");
-	dumpHand(getCurrentPlayer(Game)->hand, true);
+	// //Make sure the user knows their most current hand
+	// printf("\n----------\nYour hand:\n");
+	// dumpHand(getCurrentPlayer(Game)->hand, true);
 
 
-	int buff[52];
-	int ibuffSize = 52;
+	int buff[DECK_SIZE];
+	int ibuffSize = DECK_SIZE;
 
 
 	int currPlayerDeckSize = deckSize(getCurrentPlayer(Game)->hand);
@@ -497,6 +511,12 @@ void process_turn(gState* Game) {
 	//Play cards or end turn (blank char?)
 
 	//printf("\n");
+
+	//Make sure the user knows their most current hand
+	printf("\n----------\nYour hand:\n");
+	dumpHand(getCurrentPlayer(Game)->hand, true);
+	printf("\n");
+
 	
 	char c;
 	do {
@@ -505,37 +525,42 @@ void process_turn(gState* Game) {
 		flushKeyboard();
 	} while (c != 'P' && c != 'p' && c != 'S' && c != 's');
 	
-	switch (c) {
-		case 'P':
-		case 'p':
-			//case
-			playCards(Game);
 
-			break;
-		case 'S':
-		case 's':
-			//We want to skip turn, just return
-			// printf("Deck:\n");
-			// dumpDeck(Game.Deck);
-
-			// printf("\nDiscard:\n");
-			// dumpDeck(Game.Discard);
-
-			// printf("\nP1:\n");
-			// dumpDeck(Game.Player.hand);
-
-			// printf("\nP1 IP:\n");
-			// dumpDeck(Game.Player.inPlay);
-
-			// printf("\nP2:\n");
-			// dumpDeck(Game.Computer.hand);
-
-			// printf("\nP2 IP:\n");
-			// dumpDeck(Game.Computer.inPlay);
-
-			// printf("\n\n");
-			return;
+	if(c == 'P' || c =='p') {
+		playCards(Game);
 	}
+
+	// switch (c) {
+	// 	case 'P':
+	// 	case 'p':
+	// 		//case
+	// 		playCards(Game);
+
+	// 		break;
+	// 	case 'S':
+	// 	case 's':
+	// 		//We want to skip turn, just return
+	// 		// printf("Deck:\n");
+	// 		// dumpDeck(Game.Deck);
+
+	// 		// printf("\nDiscard:\n");
+	// 		// dumpDeck(Game.Discard);
+
+	// 		// printf("\nP1:\n");
+	// 		// dumpDeck(Game.Player.hand);
+
+	// 		// printf("\nP1 IP:\n");
+	// 		// dumpDeck(Game.Player.inPlay);
+
+	// 		// printf("\nP2:\n");
+	// 		// dumpDeck(Game.Computer.hand);
+
+	// 		// printf("\nP2 IP:\n");
+	// 		// dumpDeck(Game.Computer.inPlay);
+
+	// 		// printf("\n\n");
+	// 		return;
+	// }
 
 
 	return;
@@ -548,93 +573,6 @@ void end_turn(gState* Game) {
 
 	return;
 }
-
-
-
-
-
-
-
-
-
-// void getUserCommand(gState Game) {
-
-// 	int LOC;
-// 	char in;
-
-// 	do {
-// 		printf("> ");
-// 		LOC = scanf(" %c", &in);
-// 	} while(LOC != 1);
-
-// 	switch (in) {
-	
-// 	case 'P':
-// 	case 'p':
-// 		//Pickup Card, call its function
-// 		/*
-// 			P
-// 			(D)eck or D(i)scard?
-// 			D takes no args, pops card off deck into hand, shows you, and then you can Discard to end your turn
-
-// 			I will ask you which number card in the discard pile, (that number and up)
-// 				Have to use that card if not [-1], if cant, forced to return stack
-			
-// 		*/
-// 		pickupCardAction(Game);
-// 		break;
-	
-// 	case 'D':
-// 	case 'd':
-// 		//Discard card to end turn
-// 		discardCardAction(Game);
-// 		break;
-
-// 	case 'L':
-// 	case 'l':
-// 		//Place down cards
-// 		placeCardAction(Game);
-// 		break;
-
-// 	case 'B':
-// 	case 'b':
-// 		printf("Deck:\n");
-// 		dumpDeck(Game.Deck);
-
-// 		printf("\nDiscard:\n");
-// 		dumpDeck(Game.Discard);
-
-// 		printf("\nP1:\n");
-// 		dumpDeck(Game.Player.hand);
-
-// 		printf("\nP1 IP:\n");
-// 		dumpDeck(Game.Player.inPlay);
-
-// 		printf("\nP2:\n");
-// 		dumpDeck(Game.Computer.hand);
-
-// 		printf("\nP2 IP:\n");
-// 		dumpDeck(Game.Computer.inPlay);
-
-// 		printf("\n\n");
-// 		break;
-	
-// 	case 'Q':
-// 	case 'q':
-// 		exit(0);
-
-// 	default:
-// 		//Invalid input, print usage
-// 		printUsage();
-// 		break;
-// 	}
-	
-
-	
-
-// }
-
-
 
 
 

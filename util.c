@@ -43,7 +43,7 @@ void getCardNumbers(int intArray[], int size) {
 	// printf("Read: %s\n", buffer);
 
 
-	int hold = -1;
+	int hold = -2;
 	int idx = 0;
 	int numsRead = 0;
 	int LOC;
@@ -54,6 +54,17 @@ void getCardNumbers(int intArray[], int size) {
 	{
 
         //assert(idx > 0);
+
+		if(hold < 0) {
+			//We got a cancel signal from user, return nothing
+			//Will leave intArray in unknown state?
+			//Make contract enforce that being "empty?"
+			//Clear everything that we put in?
+			for (int i = 0; i < size; i++) {
+				intArray[i] = -1;
+			}
+			goto DONE;
+		}
 
 		if(!isdigit(*(buffer + idx))) {
 			//Current char is NOT a number, pass over it
@@ -69,6 +80,7 @@ void getCardNumbers(int intArray[], int size) {
 			raise(SIGTRAP);
 		}
 
+		//What does this do again
         if (hold > 0) {
 		    idx += (int) floor(log10(hold)) + 1;
         } else {

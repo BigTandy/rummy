@@ -151,6 +151,59 @@ void dumpHand(Card hand[], bool newLine) {
 
 
 
+void dumpInPlay(pState player) {
+
+
+	//Get length of hand
+	// int i = 0;
+	// while(hand[i].number != 0 && hand[i].suit != JOKER) {
+	// 	i++;
+	// }
+
+	if (player.amountRuns == 0)
+		return;
+
+
+
+
+	for(int j = 0; j < player.amountRuns; j++) {
+
+		printf("Run #%d [", j);
+
+		for(int cardsInRun = 0; cardsInRun < player.ipRuns[j].size; cardsInRun++) {
+			printf("(%c%c) ", 
+			numChar(player.ipRuns[j].runCards[cardsInRun].card.number),
+			suitChar(player.ipRuns[j].runCards[cardsInRun].card.suit)
+			);
+
+			// if ((cardsInRun + 1) % 7 == 0) {
+			// 	printf("\n");
+			// 	for(int l = 6; l >= 0; l--) {
+			// 		printf(" %.2d  ", j - l);
+			// 	}
+			// 	printf("\n");
+			// }
+
+		}
+		printf("\b]\n");
+
+
+	}
+
+
+	printf("\n");
+	return;
+
+
+
+}
+
+
+
+
+
+
+
 void deckRemoveMiddle(Card deck[], int dSize, int index) {
 
 	if (index >= dSize) {

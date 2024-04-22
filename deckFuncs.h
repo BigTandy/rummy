@@ -16,6 +16,7 @@ void dealHand(Card deck[], Card hand1[], Card hand2[]);
 Card deckPop(Card deck[], int size);
 void dumpHand(Card hand[], bool newLine);
 
+void dumpInPlay(pState player);
 void deckRemoveMiddle(Card deck[], int dSize, int index);
 
 
