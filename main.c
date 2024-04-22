@@ -188,9 +188,7 @@ int main(int argc, char* argv[]) {
 
 				if (Game.Who == PLAYER) {
 					Game.Who = COMPUTER;
-				}
-				
-				if (Game.Who == COMPUTER) {
+				} else if (Game.Who == COMPUTER) {
 					Game.Who = PLAYER;
 				}
 
@@ -237,14 +235,18 @@ void start_turn(gState* Game) {
 	else
 		printf("Player 2\n");
 	
+
+	//Fix the fucking spacing wtf (newlines)
 	
 	printf("Your hand:\n");
 	dumpHand(getCurrentPlayer(Game)->hand, true);
 
 	//Make this show runs for cards in play
 	printf("Your Cards In Play:\n");
-	//dumpHand(getCurrentPlayer(Game)->inPlay, true);
 	dumpInPlay(*getCurrentPlayer(Game));
+
+	printf("Their Cards In Play:\n");
+	dumpInPlay(*getOtherPlayer(Game));
 
 	printf("Discard Pile:\n");
 	dumpHand(Game->Discard, true);
@@ -332,6 +334,20 @@ void playCards(gState* Game) {
 	// //Make sure the user knows their most current hand
 	// printf("\n----------\nYour hand:\n");
 	// dumpHand(getCurrentPlayer(Game)->hand, true);
+
+
+
+	/*
+	==========	   (-----)		I----)
+		I		  (       )		I-----)
+		I		 (         )	I------)
+		I		  (       )		I-----)
+		I		   (-----)		I----)
+	*/
+
+
+
+
 
 
 	int buff[DECK_SIZE];
@@ -569,8 +585,38 @@ void process_turn(gState* Game) {
 
 void end_turn(gState* Game) {
 
+	//Need to discard
+
+	//Going to do this shitally, refactor later
 
 
+	printf("Your hand:\n");
+	dumpHand(getCurrentPlayer(Game)->hand, true);
+
+	printf("Discard Pile:\n");
+	dumpHand(Game->Discard, true);
+
+
+	printf("Discard Card Number: ");
+	int selected;
+	int NOC;
+
+	do {
+		NOC = scanf("%d", &selected);
+		flushKeyboard();
+	} while (NOC != 1);
+
+	//Probably need to sanity check this, and check boundrys
+	//Definetly need to boundry and sainty check this
+	deckPush(Game->Discard, DECK_SIZE, getCurrentPlayer(Game)->hand[selected]);
+	deckRemoveMiddle(getCurrentPlayer(Game)->hand, DECK_SIZE, selected);
+
+
+
+	//need to check when someone discards their last card, thus ending the game
+
+
+	printf("\n\n");
 	return;
 }
 

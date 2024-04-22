@@ -19,6 +19,8 @@ void dumpHand(Card hand[], bool newLine);
 void dumpInPlay(pState player);
 void deckRemoveMiddle(Card deck[], int dSize, int index);
 
+int calcPointValues(Run run);
+
 
 //int deckPushs(Card deck[], int dSize, cardU cards, int cSize);
 

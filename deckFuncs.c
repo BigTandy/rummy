@@ -149,6 +149,35 @@ void dumpHand(Card hand[], bool newLine) {
 }
 
 
+int calcPointValues(Run run) {
+
+
+	//Need to calculate point values, somewhat context depended
+	//All [2..9] cards are 5 points
+	//All 10 and face cards are 10 points
+	//Ace's are either 15 points if played high, or 5 points if played low
+	//(Could just count them as 15 allways for ease of programming)
+
+	int points = 0;
+
+	for (int i = 0; i < run.size; i++) {
+
+		if ((run.runCards[i].card.number >= 2) && (run.runCards[i].card.number <= 9)) {
+			points += 5;
+		} else if ((run.runCards[i].card.number >= 10) && (run.runCards[i].card.number <= 13)) {
+			points += 10;
+		} else if (run.runCards[i].card.number == 1) {
+			//This is an ace, we'll have to look at the context to know what point value to assign to it
+			//For now, for testing, just gonna assign 15
+			points += 15;
+		}
+
+
+	}
+
+	return points;
+}
+
 
 
 void dumpInPlay(pState player) {
@@ -185,7 +214,7 @@ void dumpInPlay(pState player) {
 			// }
 
 		}
-		printf("\b]\n");
+		printf("\b<%d>]\n", calcPointValues(player.ipRuns[j]));
 
 
 	}

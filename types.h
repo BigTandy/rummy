@@ -70,6 +70,7 @@ typedef struct gameState {
 
 
 pState* getCurrentPlayer(gState* Game);
+pState* getOtherPlayer(gState* Game);
 
 char suitChar(Suit s);
 char numChar(int cn);

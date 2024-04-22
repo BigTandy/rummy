@@ -16,6 +16,15 @@ pState* getCurrentPlayer(gState* Game) {
 }
 
 
+pState* getOtherPlayer(gState* Game) {
+
+	if (Game->Who == PLAYER) {
+		return &Game->Computer;
+	} else {
+		return &Game->Player;
+	}
+
+}
 
 
 
